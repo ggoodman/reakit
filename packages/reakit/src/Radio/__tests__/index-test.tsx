@@ -260,3 +260,27 @@ test("button group", () => {
 </div>
 `);
 });
+
+test("falsy values can be checked", () => {
+  // See https://github.com/reakit/reakit/issues/607
+  const Test = () => {
+    const radio = useRadioState();
+    return (
+      <RadioGroup {...radio} aria-label="radiogroup" id="base">
+        <Radio {...radio} value={0} aria-label="0" />
+        <Radio {...radio} value="" aria-label="empty-string" />
+      </RadioGroup>
+    );
+  };
+
+  const { getByLabelText } = render(<Test />);
+
+  click(getByLabelText("0"));
+  expect(getByLabelText("0")).toBeChecked();
+  expect(getByLabelText("0")).toHaveFocus();
+  expect(getByLabelText("empty-string")).not.toBeChecked();
+  click(getByLabelText("empty-string"));
+  expect(getByLabelText("empty-string")).toBeChecked();
+  expect(getByLabelText("empty-string")).toHaveFocus();
+  expect(getByLabelText("0")).not.toBeChecked();
+});
